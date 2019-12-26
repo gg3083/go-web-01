@@ -8,7 +8,7 @@ import (
 type Student struct {
 	Id       int
 	Name     string
-	BirthDay string
+	Birthday string
 	Sex      bool
 }
 
@@ -22,6 +22,23 @@ func GetAllStudents() []*Student {
 	var students []*Student
 	q := o.QueryTable("student")
 	q.All(&students)
+	return students
+}
+
+//查询id》1 的数据
+func GetAllStudentsInCondition() []*Student {
+	o := orm.NewOrm()
+	o.Using("default")
+	var students []*Student
+	res, err := o.Raw("select * from student where id > ?", "0").QueryRows(&students)
+	if err != nil {
+		fmt.Println("查询出错")
+	}
+	fmt.Println(res)
+	fmt.Println(students)
+	for _, students := range students {
+		fmt.Println("students = ", students)
+	}
 	return students
 }
 

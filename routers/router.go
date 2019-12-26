@@ -25,11 +25,13 @@ func init() {
 				&controllers.UserController{},
 			),
 		),
-		beego.NSNamespace("/student",
-			beego.NSInclude(
-				&controllers.StudentController{},
-			),
-		),
+		//beego.NSNamespace("/student",
+		//	beego.NSInclude(
+		//		&controllers.StudentController{},
+		//	),
+		//),
 	)
+	beego.Router("/student/list", &controllers.StudentController{}, "*:GetAllStudents")
+	beego.Router("/student/test", &controllers.StudentController{}, "*:GetAllStudentsInCondition")
 	beego.AddNamespace(ns)
 }

@@ -34,6 +34,12 @@ func (u *StudentController) GetAllStudents() {
 	u.ServeJSON()
 }
 
+func (u *StudentController) GetAllStudentsInCondition() {
+	students := models.GetAllStudentsInCondition()
+	u.Data["json"] = students
+	u.ServeJSON()
+}
+
 // @Title updateStudent
 // @Description update the student
 // @Param       uid             path    string  true            "The uid you want to update"
