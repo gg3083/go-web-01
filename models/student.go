@@ -6,10 +6,10 @@ import (
 )
 
 type Student struct {
-	Id       int
-	Name     string
-	Birthday string
-	Sex      bool
+	Id       int    `json:"id"`
+	Name     string `json:"name"`
+	Birthday string `json:"birthday"`
+	Sex      bool   `json:"sex"`
 }
 
 func init() {

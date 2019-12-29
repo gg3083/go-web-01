@@ -31,7 +31,9 @@ func init() {
 		//	),
 		//),
 	)
-	beego.Router("/student/list", &controllers.StudentController{}, "*:GetAllStudents")
-	beego.Router("/student/test", &controllers.StudentController{}, "*:GetAllStudentsInCondition")
+	beego.Router("/student/list", &controllers.StudentController{}, "*:List")
+	beego.Router("/student/add", &controllers.StudentController{}, "*:Add")
+	beego.Router("/student/del", &controllers.StudentController{}, "*:Del")
+	beego.Router("/student/update", &controllers.StudentController{}, "*:UpdateData")
 	beego.AddNamespace(ns)
 }

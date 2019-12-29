@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"encoding/json"
-
 	"../models"
+	"encoding/json"
+	"fmt"
 	"github.com/astaxie/beego"
 )
 
@@ -11,59 +11,49 @@ type StudentController struct {
 	beego.Controller
 }
 
-// @Title addStudent
-// @Description create students
-// @Param       body            body    models.Student  true            "body for student content"
-// @Success 200 {int} models.Student.Id
-// @router / [post]
-func (u *StudentController) Post() {
+func (S StudentController) List() {
+	student := models.GetAllStudents()
+	S.Data["json"] = student
+	S.ServeJSON()
+
+}
+
+func (S StudentController) Add() {
 	var student models.Student
-	json.Unmarshal(u.Ctx.Input.RequestBody, &student)
-	uid := models.AddStudent(&student)
-	u.Data["json"] = map[string]int{"uid": uid}
-	u.ServeJSON()
+	json.Unmarshal(S.Ctx.Input.RequestBody, &student)
+	//sex, error := S.GetBool("sex")
+	//if error != nil {
+	//	fmt.Println(error)
+	//}
+	//student.Sex = sex
+	sid := models.AddStudent(&student)
+	S.Data["json"] = map[string]int{"sid": sid}
+	S.ServeJSON()
+
 }
 
-// @Title 获得所有学生
-// @Description 返回所有的学生数据
-// @Success 200 {object} models.Student
-// @router / [get]
-func (u *StudentController) GetAllStudents() {
-	students := models.GetAllStudents()
-	u.Data["json"] = students
-	u.ServeJSON()
-}
+func (S StudentController) Del() {
 
-func (u *StudentController) GetAllStudentsInCondition() {
-	students := models.GetAllStudentsInCondition()
-	u.Data["json"] = students
-	u.ServeJSON()
-}
+	id, error := S.GetInt("id")
+	if error != nil {
+		fmt.Println(error)
+	}
+	models.DeleteStudent(id)
+	S.Data["json"] = map[string]int{"sid": id}
+	S.ServeJSON()
 
-// @Title updateStudent
-// @Description update the student
-// @Param       uid             path    string  true            "The uid you want to update"
-// @Param       body            body    models.Student  true            "body for student content"
-// @Success 200 {object} models.Student
-// @Failure 403 :uid is not int
-// @router / [put]
-func (u *StudentController) UpdateStudent() {
+}
+func (S StudentController) UpdateData() {
+
 	var student models.Student
-	json.Unmarshal(u.Ctx.Input.RequestBody, &student)
+	json.Unmarshal(S.Ctx.Input.RequestBody, &student)
+	//sex, error := S.GetBool("sex")
+	//if error != nil {
+	//	fmt.Println(error)
+	//}
+	//student.Sex = sex
 	models.UpdateStudent(&student)
-	u.Data["json"] = student
-	u.ServeJSON()
-}
+	S.Data["json"] = student
+	S.ServeJSON()
 
-// @Title deleteStudent
-// @Description delete the student
-// @Param       uid             path    string  true            "The uid you want to delete"
-// @Success 200 {string} delete success!
-// @Failure 403 uid is empty
-// @router /:id [delete]
-func (u *StudentController) DeleteStudent() {
-	uid, _ := u.GetInt(":id")
-	models.DeleteStudent(uid)
-	u.Data["json"] = "delete success!"
-	u.ServeJSON()
 }

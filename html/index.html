@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+    <el-button @click="add">add</el-button>
+    <el-table :data="tableList">
+        <el-table-column prop="id" label="Id"></el-table-column>
+        <el-table-column prop="name" label="Name"></el-table-column>
+        <el-table-column prop="birthday" label="Birthday"></el-table-column>
+        <el-table-column prop="sex" label="Sex">
+            <template slot-scope="scope">
+                <span>{{scope.row.sex}}</span>
+            </template>
+        </el-table-column>
+        <el-table-column prop="sex" label="操作">
+            <template slot-scope="scope">
+                <el-button @click="update(scope.row.id)">编辑</el-button>
+                <el-button @click="del(scope.row.id)">删除</el-button>
+            </template>
+
+        </el-table-column>
+    </el-table>
+    <el-dialog
+            title="提示"
+            :visible.sync="updateModel"
+            width="30%"
+            :before-close="handleClose">
+        <el-form ref="form" :model="form" label-width="80px">
+            <el-form-item label="ID">
+                <el-input v-model="form.id" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="Name">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="Birthday">
+                <el-date-picker
+                        v-model="form.birthday"
+                        type="datetime"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        placeholder="选择日期时间">
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item label="sex">
+                <el-input v-model="form.sex"></el-input>
+            </el-form-item>
+
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="updateModel = false">取 消</el-button>
+    <el-button type="primary" @click="updateData">确 定</el-button>
+  </span>
+</el-dialog>
+    <el-dialog
+            title="提示"
+            :visible.sync="addModel"
+            width="30%"
+            :before-close="handleClose">
+        <el-form ref="form" :model="form" label-width="80px">
+            <el-form-item label="ID">
+                <el-input v-model="form.id"></el-input>
+            </el-form-item>
+            <el-form-item label="Name">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="birthday">
+                <el-date-picker
+                        v-model="form.birthday"
+                        type="datetime"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        placeholder="选择日期时间">
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item label="sex">
+                <el-input v-model="form.sex"></el-input>
+            </el-form-item>
+
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="addModel = false">取 消</el-button>
+    <el-button type="primary" @click="addData">确 定</el-button>
+  </span>
+    </el-dialog>
+
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                tableList: [],
+                updateModel: false,
+                addModel: false,
+                form: {
+                    id: "",
+                    name: '',
+                    sex: '',
+                    birthday: '',
+                },
+            }
+        },
+        created() {
+            this.listData()
+        },
+        methods: {
+            listData() {
+                //发送get请求
+                this.$http.get('http://localhost:8070/student/list').then(function (res) {
+                    console.log(res.body)
+                    this.tableList = res.body
+                }, function () {
+                    console.log('请求失败处理');
+                });
+            },
+            update(id) {
+                this.form.id = id
+                this.updateModel = true
+            },
+            updateData() {
+                console.log(this.form)
+                this.$http.post('http://localhost:8070/student/update',this.form,).then(function(res){  //{emulateJSON:true}
+                    console.log(res.body);
+                    this.listData()
+                },function(res){
+                    console.log(res.status);
+                });
+                this.updateModel = false
+            },
+            del(id) {
+                this.$http.post('http://localhost:8070/student/del?id='+id).then(function(res){  //{emulateJSON:true}
+                    console.log(res.body);
+                    this.listData()
+                },function(res){
+                    console.log(res.status);
+                });
+            },
+            add(){
+                this.form = {}
+                this.addModel = true
+            },
+            addData(){
+              console.log(this.form)
+                this.$http.post('http://localhost:8070/student/add',this.form,).then(function(res){  //{emulateJSON:true}
+                    console.log(res.body);
+                    this.listData()
+                },function(res){
+                    console.log(res.status);
+                });
+                this.addModel = false
+
+            },
+            handleClose(done) {
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        done();
+                    })
+                    .catch(_ => {
+                    });
+            },
+        }
+    })
+</script>
+</html>
